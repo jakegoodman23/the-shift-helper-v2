@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %}Sign up{% endblock %}
+{% block content %}
+<div class="form_style">
+  <div class="row">
+    <div class="col-sm-12 col-md-8">
+      <h3>Sign up your hospital!</h3>
+      {{ wtf.quick_form(form, novalidate=True) }}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %}Request Open Shift{% endblock %}
+{% block content %}
+<div class="request-form-group" style="width:100%;">
+<div class="shift-details" style="width:50%; float:left">
+<h3>Shift Details</h3>
+<p>Area: {{ shift.area }}</p>
+<p>Date: {{ shift.date }}</p>
+<p>Start Time: {{ shift.start_time }}</p>
+<p>End Time: {{ shift.end_time }}</p>
+<p style="color: red">Shift Comments: {{ shift.comments }}</p>
+</div>
+<div class="form-style" style="margin-left: 50%; height: 400px">
+  <div class="row">
+    <div class="col-sm-12 col-md-8">
+      <h3>Request Open Shift Form</h3>
+      {{ wtf.quick_form(form, novalidate=True) }}
+    </div>
+  </div>
+</div>
+</div>
+
+{% endblock %}

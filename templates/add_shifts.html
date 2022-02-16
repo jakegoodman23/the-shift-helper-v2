@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %}Add Open Shift{% endblock %}
+{% block content %}
+<div class="form-style">
+  <div class="row">
+    <div class="col-sm-12 col-md-8">
+      <h3>Add Open Shift Form</h3>
+      {{ wtf.quick_form(form, novalidate=True) }}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

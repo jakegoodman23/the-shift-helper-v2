@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Approve Request{% endblock %}
+
+{% block content %}
+
+     <form class="approve-request-form" action="{{ url_for('approve_request') }}" method="POST">
+         <p>Hospital Area: {{shift.area}}</p>
+         <p>Role Needed: {{shift.role}}</p>
+         <p>Date: {{shift.date}}</p>
+         <p>Start Time: {{shift.start_time}}</p>
+         <p>End Time: {{shift.end_time}}</p>
+         <p>Requestor Name: {{ request.requested_by_name }}</p>
+         <p>Requestor Comments: {{ request.comments }}</p>
+         <input hidden="hidden" name="shift_id" value="{{shift.shift_id}}">
+         <input hidden="hidden" name="request_id" value="{{ request.transaction_id }}">
+        <button class="btn btn-primary" type="submit">Approve Request</button>
+    </form>
+
+{% endblock %}

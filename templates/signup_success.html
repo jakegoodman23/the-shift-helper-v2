@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Successful Signup{% endblock %}
+
+{% block content %}
+
+    <div class="success-signup">
+        <h2>Congrats, you were successfully signed up for Shift Helper 🎉🎉🎉 </h2>
+        <h5>Below is the information regarding your hospital. Please store this info as it'll be important when sharing with other staff.</h5>
+
+    <ul class="list-group">
+        <li class="list-group-item">Hospital Name: {{ hospital.hospital_name }}</li>
+        <li class="list-group-item">Admin Name: {{ hospital.admin_name }}</li>
+        <li class="list-group-item">Admin Email: {{ hospital.admin_email }}</li>
+        <li class="list-group-item">Admin Password: {{ session['admin_password']}}</li>
+        <li class="list-group-item">Staff Password: {{ session['staff_password'] }}</li>
+    </ul>
+
+
+    </div>
+
+{% endblock %}

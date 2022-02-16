@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="box">
+	<h1>Shift Helper</h1>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+         <p>{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('login') }}" method="post">
+        <div class="input-group mb-3">
+        <input type="text" class="form-control" name="password" placeholder="" required="required"/>
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">Login</button>
+          </div>
+        </div>
+    </form>
+
+    <a href="{{ url_for('signup') }}" class="btn btn-primary btn-block btn-large">Sign Up</a>
+
+    <p class="index-text">Log into your location's site by entering your admin or staff password. </p>
+    <p class="index-text">If your location does not yet have an account, select the sign up button to proceed. </p>
+</div>
+
+
+
+{% endblock %}

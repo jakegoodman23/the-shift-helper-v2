@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Available Open Shifts{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+
+      <h1>{{ hospital.hospital_name }} Available Open Shifts</h1>
+
+	  <table id="data" class="table table-striped table-sm table-bordered">
+        <thead>
+            <tr>
+                <th>Hospital Area</th>
+                <th>Role</th>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Comments</th>
+                <th>Shift Contact</th>
+                <th>Request Shift</th>
+            </tr>
+        </thead>
+          <tbody>
+              {% for row in shifts %}
+                  <tr>
+                      <td>{{ row.area }}</td>
+                      <td>{{ row.role }}</td>
+                      <td>{{ row.date }}</td>
+                      <td>{{ row.start_time }}</td>
+                      <td>{{ row.end_time }}</td>
+                      <td>{{ row.comments }}</td>
+                      <td><a href="mailto:{{ row.contact_email }}">{{ row.contact_name}}</a></td>
+                      <td><a href="{{ url_for('request_shift', id=row.shift_id) }}">Request Shift</a></td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+  	  </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable();
+    });
+  </script>
+{% endblock %}
