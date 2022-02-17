@@ -58,7 +58,7 @@ class Hospital(UserMixin, db.Model):
     admin_email = db.Column(db.String(100))
     admin_password = db.Column(db.String(1000))
     staff_password = db.Column(db.String(1000))
-    created_date = db.Column(db.DATETIME)
+    created_date = db.Column(db.TIMESTAMP)
 
 
 class Shifts(db.Model):
