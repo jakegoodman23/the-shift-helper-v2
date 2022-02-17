@@ -20,12 +20,12 @@ import smtplib
 abspath = os.path.abspath(__file__)
 dirname = os.path.dirname(abspath)
 os.chdir(dirname)
-email_address = os.environ.get("EMAIL")
-email_password = os.environ.get("EMAIL_PASSWORD")
+email_address = 'test'#'#os.environ.get("EMAIL")
+email_password = 'test'#'#os.environ.get("EMAIL_PASSWORD")
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
+app.config['SECRET_KEY'] = '505cfcf30694ea490f71cab51b3500effceeb54c9180b38817243fae7bba03c6'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///blog.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SESSION_PERMANENT"] = False
