@@ -13,7 +13,6 @@ from wtforms.validators import DataRequired, Email, Length
 from dotenv import load_dotenv
 from datetime import datetime, date
 import os
-
 import pandas as pd
 import smtplib
 
