@@ -18,10 +18,19 @@ import smtplib
 
 abspath = os.path.abspath(__file__)
 dirname = os.path.dirname(abspath)
+
 email_address = os.environ.get("EMAIL")
 email_password = os.environ.get("EMAIL_PASSWORD")
 
 app = Flask(__name__)
+debug = False
+DEV = False
+if DEV:
+    os.chdir(dirname)
+    debug = True
+    parent_path = os.path.abspath(os.path.dirname(__file__))
+    load_dotenv(os.path.join(parent_path, 'info.env'))
+    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL",  "sqlite:///shifthelper.db")
@@ -139,6 +148,10 @@ def home():
     return render_template('index.html')
 
 
+@app.route('/about')
+def about():
+
+    return render_template('about.html')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -455,4 +468,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=debug)

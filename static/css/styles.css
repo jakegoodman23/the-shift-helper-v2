@@ -73,6 +73,19 @@ input {
 	transition: box-shadow .5s ease;
 }
 
+.about-shift-helper h2 {
+	text-align: center;
+	padding-top: 25px;
+}
+
+.about-shift-helper li {
+	margin-bottom: 1rem;
+}
+
+.about-shift-helper p {
+	text-align: center;
+	padding-top: 25px;
+}
 .form-style {
 	color: rgb(13, 13, 13);
 	padding-left: 10px;
