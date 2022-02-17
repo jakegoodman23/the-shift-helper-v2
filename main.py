@@ -22,8 +22,8 @@ dirname = os.path.dirname(abspath)
 os.chdir(dirname)
 parent_path = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(parent_path, 'info.env'))
-email_address = os.getenv("EMAIL")
-email_password = os.getenv("EMAIL_PASSWORD")
+email_address = os.environ.get("EMAIL")
+email_password = os.environ.get("EMAIL_PASSWORD")
 
 app = Flask(__name__)
 
