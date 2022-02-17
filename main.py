@@ -24,7 +24,8 @@ email_password = os.environ.get("EMAIL_PASSWORD")
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL",  "sqlite:///shifthelper.db")
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL",  "sqlite:///shifthelper.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://ezmuzuegpvishm:11cdb95de6d030ec2379a34f15438fa372054ae04cfbecde2a15f0da1d21e450@ec2-35-153-35-94.compute-1.amazonaws.com:5432/db01m4eq0otvmq'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = 'filesystem'
@@ -71,8 +72,8 @@ class Shifts(db.Model):
     comments = db.Column(db.String)
     status = db.Column(db.String)
     picked_up_by = db.Column(db.String)
-    approved_dt_tm = db.Column(db.DATETIME)
-    create_dt_tm = db.Column(db.DATETIME)
+    approved_dt_tm = db.Column(db.TIMESTAMP)
+    create_dt_tm = db.Column(db.TIMESTAMP)
     contact_name = db.Column(db.String)
     contact_email = db.Column(db.String)
 
@@ -82,8 +83,8 @@ class Requests(db.Model):
     shift_id = db.Column(db.Integer)
     hospital_id = db.Column(db.Integer)
     status = db.Column(db.String)
-    create_dt_tm = db.Column(db.DATETIME)
-    approved_dt_tm = db.Column(db.DATETIME)
+    create_dt_tm = db.Column(db.TIMESTAMP)
+    approved_dt_tm = db.Column(db.TIMESTAMP)
     requested_by_name = db.Column(db.String)
     requested_by_email = db.Column(db.String)
     requested_by_phone = db.Column(db.String)
