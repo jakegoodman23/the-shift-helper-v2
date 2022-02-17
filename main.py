@@ -24,8 +24,7 @@ email_password = os.environ.get("EMAIL_PASSWORD")
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL",  "sqlite:///shifthelper.db")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://ezmuzuegpvishm:11cdb95de6d030ec2379a34f15438fa372054ae04cfbecde2a15f0da1d21e450@ec2-35-153-35-94.compute-1.amazonaws.com:5432/db01m4eq0otvmq'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL",  "sqlite:///shifthelper.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = 'filesystem'
