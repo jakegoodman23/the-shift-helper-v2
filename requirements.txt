@@ -18,3 +18,4 @@ openpyxl
 Flask-Login
 python-dotenv
 Flask-Session
+gunicorn==20.1.0
