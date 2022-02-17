@@ -95,8 +95,8 @@ class SignupForm(FlaskForm):
     admin_name = StringField(label='Name', validators=[DataRequired()])
     admin_email = StringField(label='Email', validators=[DataRequired(), Email()])
     hospital_name = StringField(label='Hospital Name', validators=[DataRequired()])
-    admin_password = StringField(label='Admin Password', validators=[Length(min=4)])
-    staff_password = StringField(label='Staff Password', validators=[Length(min=4)])
+    admin_password = StringField(label='Admin Login', validators=[Length(min=4)])
+    staff_password = StringField(label='Staff Login', validators=[Length(min=4)])
     submit = SubmitField(label='Sign up')
 
 
