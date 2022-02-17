@@ -15,7 +15,6 @@ email_validator
 datetime
 pandas
 openpyxl
-smtplib
 Flask-Login
 python-dotenv
 Flask-Session
