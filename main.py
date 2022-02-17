@@ -19,9 +19,8 @@ import smtplib
 
 abspath = os.path.abspath(__file__)
 dirname = os.path.dirname(abspath)
-os.chdir(dirname)
-email_address = os.environ("EMAIL")
-email_password = os.environ("EMAIL_PASSWORD")
+email_address = os.environ.get("EMAIL")
+email_password = os.environ.get("EMAIL_PASSWORD")
 
 app = Flask(__name__)
 
