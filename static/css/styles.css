@@ -58,6 +58,9 @@ body {
 }
 .box h1 { color: rgba(0, 0, 0, 0.55); letter-spacing:1px; text-align:center; }
 
+.form-style {
+	padding-left: 15px;
+}
 .index-text{
 	color: rgba(0, 0, 0, 0.55);
 }
@@ -164,10 +167,18 @@ input {
 	font-size: 20px;
 }
 
-/*.edit-shift-form [type=submit]:hover {*/
-/*  background-color: #45a049;*/
-/*}*/
 
 .email-italic {
 	font-style: italic;
 }
+
+.table {
+	text-align: center;
+}
+
+.table-responsive {
+	padding-left: 150px;
+	padding-right: 150px;
+	text-align: center;
+}
+

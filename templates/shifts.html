@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class="container">
+<div class="table-responsive">
   <div class="row">
     <div class="col-sm-12">
 
@@ -15,9 +15,10 @@
             <tr>
                 <th>Hospital Area</th>
                 <th>Role</th>
-                <th>Date</th>
+                <th>Shift Date</th>
                 <th>Start Time</th>
                 <th>End Time</th>
+                <th>Posted Date</th>
                 <th>Comments</th>
                 <th>Shift Contact</th>
                 <th>Request Shift</th>
@@ -31,6 +32,7 @@
                       <td>{{ row.date }}</td>
                       <td>{{ row.start_time }}</td>
                       <td>{{ row.end_time }}</td>
+                      <td>{{ row.create_dt_tm }}</td>
                       <td>{{ row.comments }}</td>
                       <td><a href="mailto:{{ row.contact_email }}">{{ row.contact_name}}</a></td>
                       <td><a href="{{ url_for('request_shift', id=row.shift_id) }}">Request Shift</a></td>
