@@ -33,7 +33,7 @@ if DEV:
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL",  "sqlite:///shifthelper.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///shifthelper.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = 'filesystem'
@@ -148,7 +148,8 @@ class RequestForm(FlaskForm):
     structure of the request shift form of a FlaskForm object
     """
     requestor_name = StringField(label="What's your name?", validators=[DataRequired()])
-    label_for_email = Markup("What's your email? <span class='email-italic'>(will be used to provide updates on shift)</span>")
+    label_for_email = Markup(
+        "What's your email? <span class='email-italic'>(will be used to provide updates on shift)</span>")
     requestor_email = StringField(label_for_email
                                   , validators=[DataRequired(), Email()])
     requestor_phone_num = StringField(label="What's your phone number?")
@@ -317,7 +318,8 @@ def shifts():
     cur_hospital = Hospital.query.get(hospital_id)
     cur_date = date.today()
     available_shifts = db.session.query(Shifts) \
-        .filter(Shifts.status != 'Approved', Shifts.date >= cur_date, Shifts.hospital_id == hospital_id) \
+        .filter(Shifts.status != 'Approved', Shifts.status != 'Removed', Shifts.date >= cur_date
+                , Shifts.hospital_id == hospital_id) \
         .order_by(Shifts.date, Shifts.start_time, Shifts.area, Shifts.role)
 
     return render_template('shifts.html', hospital=cur_hospital, shifts=available_shifts, logged_in=True)
@@ -374,7 +376,7 @@ def pending_shifts():
         .order_by(Shifts.area, Shifts.role, Shifts.date, Shifts.start_time, Shifts.end_time) \
         .with_entities(Shifts.area, Shifts.role, Shifts.date, Shifts.start_time, Shifts.end_time, Shifts.shift_id
                        , Shifts.contact_name, Shifts.contact_email
-                       , Shifts.comments.label('shift_comments'), func.count(Requests.shift_id).label('request_count'))\
+                       , Shifts.comments.label('shift_comments'), func.count(Requests.shift_id).label('request_count')) \
         .group_by(Shifts.area, Shifts.role, Shifts.date, Shifts.start_time, Shifts.end_time, Shifts.shift_id
                   , Shifts.comments, Shifts.contact_name, Shifts.contact_email)
     return render_template('pending_shifts.html', shifts=open_shifts, hospital=cur_hospital, logged_in=True)
@@ -403,7 +405,7 @@ def approve_request():
         db.session.commit()
         request_to_approve.approved_dt_tm = cur_dt
 
-        requests_to_pass = db.session.query(Requests)\
+        requests_to_pass = db.session.query(Requests) \
             .filter(Requests.shift_id == cur_shift_id, Requests.status != 'Approved')
         for req in requests_to_pass:
             req.status = 'Passed'
@@ -426,10 +428,10 @@ def request_detail():
     """
     cur_hospital = Hospital.query.get(current_user.id)
     shift_id = request.args.get('id')
-    request_details = db.session.query(Requests)\
+    request_details = db.session.query(Requests) \
         .join(Shifts, Shifts.shift_id == Requests.shift_id) \
-        .filter(Requests.shift_id == shift_id)\
-        .order_by(Requests.create_dt_tm)\
+        .filter(Requests.shift_id == shift_id) \
+        .order_by(Requests.create_dt_tm) \
         .with_entities(Requests.requested_by_name, Requests.requested_by_email
                        , Requests.comments.label('requestor_comments'), Requests.create_dt_tm.label('request_date')
                        , Shifts.date.label('shift_date'), Shifts.area, Shifts.role, Shifts.start_time, Shifts.end_time
@@ -533,9 +535,9 @@ def app_request_email():
     for req in requests_to_pass:
         pass_emails.append(req.requested_by_email)
 
-    contents = f"Thank you for submitting a request for the {shift.date} shift in the {shift.area} area.\n"\
-               "Unfortunately this shift was given to someone else. Thanks again for your interest in this shift and "\
-               "please do continue to requesting more shifts. We need all the help we can get\n"\
+    contents = f"Thank you for submitting a request for the {shift.date} shift in the {shift.area} area.\n" \
+               "Unfortunately this shift was given to someone else. Thanks again for your interest in this shift and " \
+               "please do continue to requesting more shifts. We need all the help we can get\n" \
                "From, Your trusty pals at Shift Helper"
 
     pass_emails.append(shift_email)
@@ -568,7 +570,7 @@ def staff_request_email():
 
     contents = f"{shift_name} - great news, your posted shift on {shift.date} in the {shift.area} area " \
                f"was requested by {staff_request_name} ({staff_request_email_addr})!\n" \
-                "Please navigate to the app to review the request.\n\n"\
+               "Please navigate to the app to review the request.\n\n" \
                "From,\nYour trusty pals at Shift Helper"
 
     with smtplib.SMTP("smtp.gmail.com", 587) as connection:
