@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect, flash, send_from_directory, session
+from flask import Flask, render_template, request, url_for, redirect, flash, send_from_directory, session, Markup
 from flask_bootstrap import Bootstrap
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from flask_session import Session
@@ -51,6 +51,9 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
+    """
+    load the info for the current user
+    """
     return Hospital.query.get(int(user_id))
 
 
@@ -60,6 +63,11 @@ db = SQLAlchemy(app)
 
 # user class and db table
 class Hospital(UserMixin, db.Model):
+    """
+    The class (and db table) for the hospital data. Each entry will be a new "user" of the app.
+
+    This info ix mixed in as the user info so we can maintain info of the user that's currently logged in
+    """
     id = db.Column(db.Integer, primary_key=True)
     hospital_name = db.Column(db.String(1000))
     admin_name = db.Column(db.String(1000))
@@ -70,6 +78,9 @@ class Hospital(UserMixin, db.Model):
 
 
 class Shifts(db.Model):
+    """
+    The class (and db table) for the shift data. Each entry will be a distinct shift in the system
+    """
     shift_id = db.Column(db.Integer, primary_key=True)
     hospital_id = db.Column(db.Integer)
     area = db.Column(db.String)
@@ -87,6 +98,9 @@ class Shifts(db.Model):
 
 
 class Requests(db.Model):
+    """
+    The class (and db table) for the request data. Each entry will be a distinct request in the system
+    """
     transaction_id = db.Column(db.Integer, primary_key=True)
     shift_id = db.Column(db.Integer)
     hospital_id = db.Column(db.Integer)
@@ -101,6 +115,9 @@ class Requests(db.Model):
 
 # class to have a user sign up their location
 class SignupForm(FlaskForm):
+    """
+    structure of the signup form of a FlaskForm object
+    """
     admin_name = StringField(label='Name', validators=[DataRequired()])
     admin_email = StringField(label='Email', validators=[DataRequired(), Email()])
     hospital_name = StringField(label='Hospital Name', validators=[DataRequired()])
@@ -111,26 +128,35 @@ class SignupForm(FlaskForm):
 
 # class to indicate the fields that'll be used on the app's Add Shift form
 class ShiftForm(FlaskForm):
+    """
+    structure of the add shift form of a FlaskForm object
+    """
     area = StringField(label='Area (e.g. ICU)', validators=[DataRequired()])
     role = SelectField(label='Role', choices=["RN", "CRNA", "Medical Assistant", "Scrub Tech"]
                        , validators=[DataRequired()])
     date = DateField(label='Shift Date', format='%Y-%m-%d', validators=[DataRequired()])
     start_time = StringField(label='Start Time (e.g. 8am)', validators=[DataRequired()])
     end_time = StringField(label='End Time (e.g. 5pm)', validators=[DataRequired()])
-    contact_name = StringField(label="Contact's name")
-    contact_email = StringField(label="Contact's email")
+    contact_name = StringField(label="Contact's name", validators=[DataRequired()])
+    contact_email = StringField(label="Contact's email", validators=[DataRequired(), Email()])
     comments = StringField(label='Comments (competencies, random notes, etc.)')
     submit = SubmitField(label="Add Open Shift")
 
 
 class RequestForm(FlaskForm):
+    """
+    structure of the request shift form of a FlaskForm object
+    """
     requestor_name = StringField(label="What's your name?", validators=[DataRequired()])
-    requestor_email = StringField(label="What's your email?", validators=[DataRequired(), Email()])
+    label_for_email = Markup("What's your email? <span class='email-italic'>(will be used to provide updates on shift)</span>")
+    requestor_email = StringField(label_for_email
+                                  , validators=[DataRequired(), Email()])
     requestor_phone_num = StringField(label="What's your phone number?")
     requestor_comments = StringField(label="Any comments you'd like to share?")
     submit = SubmitField(label="Request Open Shift")
 
 
+# create the databases with the above tables
 db.create_all()
 
 
@@ -150,24 +176,36 @@ def home():
 
 @app.route('/about')
 def about():
+    """
+    take user to the about page
+    """
 
-    return render_template('about.html')
+    if current_user.is_authenticated:
+        cur_hospital = Hospital.query.get(current_user.id)
+        return render_template('about.html', hospital=cur_hospital, logged_in=True)
+    elif session.get('hospital_id'):
+        hospital_id = session.get('hospital_id')
+        cur_hospital = Hospital.query.get(hospital_id)
+        return render_template('about.html', hospital=cur_hospital, logged_in=True)
+    else:
+        return render_template('about.html', hospital_id=0)
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    logs the user in the system assuming they enter in the proper info
+    """
     if request.method == 'POST':
         password = request.form['password']
         hospitals = db.session.query(Hospital).all()
         for hospital in hospitals:
             if check_password_hash(hospital.admin_password, password):
-                session['hospital_id'] = hospital.id
-                session['hospital_name'] = hospital.hospital_name
                 login_user(hospital)
                 return redirect(url_for('pending_shifts', hospital_id=session['hospital_id']))
 
         for hospital in hospitals:
             if check_password_hash(hospital.staff_password, password):
-                session['hospital_id'] = hospital.id
-                session['hospital_name'] = hospital.hospital_name
                 return redirect(url_for('shifts', hospital_id=session['hospital_id']))
 
         flash("Login does not exist. Please try again or contact your site's administrator")
@@ -177,7 +215,11 @@ def login():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    """
+    allows the user to access and complete the signup form
+    """
     signup_form = SignupForm()
+    signup_form.validate_on_submit()
     if request.method == "POST":
         hashed_admin_password = generate_password_hash(
             signup_form.admin_password.data,
@@ -222,6 +264,10 @@ def signup():
 @app.route('/signup_success/', methods=['GET'])
 @login_required
 def signup_success():
+    """
+    if the signup is successful, they will be taken to this page which displays the information they just submitted
+    so they can keep for their personal records
+    """
     hospital_id = request.args['hospital_id']
     hospital = Hospital.query.get(hospital_id)
     return render_template('signup_success.html', hospital=hospital, logged_in=True)
@@ -230,7 +276,11 @@ def signup_success():
 @app.route('/add_shifts', methods=['GET', 'POST'])
 @login_required
 def add_shifts():
+    """
+    allows the user to add a shift if they're logged in
+    """
     shift_form = ShiftForm()
+    shift_form.validate_on_submit()
     cur_hospital = Hospital.query.get(current_user.id)
     if request.method == 'POST':
         cur_dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -259,7 +309,11 @@ def add_shifts():
 
 @app.route('/shifts', methods=['GET'])
 def shifts():
+    """
+    displays all available shifts
+    """
     hospital_id = request.args['hospital_id']
+    session['hospital_id'] = hospital_id
     cur_hospital = Hospital.query.get(hospital_id)
     cur_date = date.today()
     available_shifts = db.session.query(Shifts) \
@@ -271,7 +325,11 @@ def shifts():
 
 @app.route('/request_shift', methods=['GET', 'POST'])
 def request_shift():
+    """
+    allows any user to request an available shift
+    """
     request_form = RequestForm()
+    request_form.validate_on_submit()
     shift_id = request.args.get('id')
     shift_info = Shifts.query.get(shift_id)
     cur_hospital = Hospital.query.get(shift_info.hospital_id)
@@ -296,8 +354,7 @@ def request_shift():
         return redirect(url_for('staff_request_email', shift=shift_to_update.shift_id,
                                 staff_request_name=new_request.requested_by_name,
                                 staff_request_email=new_request.requested_by_email))
-        # return render_template('request_success.html', contact=shift_to_update.contact_name, hospital=cur_hospital
-        #                        , logged_in=True)
+
     return render_template('request_shift.html', form=request_form, shift=shift_info, hospital=cur_hospital
                            , logged_in=True)
 
@@ -305,11 +362,15 @@ def request_shift():
 @app.route('/pending_shifts', methods=['GET', 'POST'])
 @login_required
 def pending_shifts():
+    """
+    allows admin users to see all the pending shifts and the corresponding request info
+    """
     cur_hospital = Hospital.query.get(current_user.id)
     cur_date = date.today()
     open_shifts = db.session.query(Shifts) \
         .join(Requests, Requests.shift_id == Shifts.shift_id, isouter=True) \
-        .filter(Shifts.date >= cur_date, Shifts.hospital_id == current_user.id, Shifts.status != 'Approved') \
+        .filter(Shifts.date >= cur_date, Shifts.hospital_id == current_user.id, Shifts.status != 'Approved'
+                , Shifts.status != 'Removed') \
         .order_by(Shifts.area, Shifts.role, Shifts.date, Shifts.start_time, Shifts.end_time) \
         .with_entities(Shifts.area, Shifts.role, Shifts.date, Shifts.start_time, Shifts.end_time, Shifts.shift_id
                        , Shifts.contact_name, Shifts.contact_email
@@ -322,6 +383,11 @@ def pending_shifts():
 @app.route('/approve_request', methods=['GET', 'POST'])
 @login_required
 def approve_request():
+    """
+    allows admin users to approve requests.
+
+    approving a request will drop all the other requests for that shift
+    """
     cur_hospital = Hospital.query.get(current_user.id)
     if request.method == "POST":
         cur_dt = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -355,17 +421,28 @@ def approve_request():
 @app.route('/request_details', methods=['GET', 'POST'])
 @login_required
 def request_detail():
+    """
+    allows admins to dig deeper in the requests for the pending shifts
+    """
     cur_hospital = Hospital.query.get(current_user.id)
     shift_id = request.args.get('id')
     request_details = db.session.query(Requests)\
+        .join(Shifts, Shifts.shift_id == Requests.shift_id) \
         .filter(Requests.shift_id == shift_id)\
-        .order_by(Requests.create_dt_tm)
+        .order_by(Requests.create_dt_tm)\
+        .with_entities(Requests.requested_by_name, Requests.requested_by_email
+                       , Requests.comments.label('requestor_comments'), Requests.create_dt_tm.label('request_date')
+                       , Shifts.date.label('shift_date'), Shifts.area, Shifts.role, Shifts.start_time, Shifts.end_time
+                       , Requests.transaction_id)
 
     return render_template('request_details.html', requests=request_details, hospital=cur_hospital, logged_in=True)
 
 
 @app.route('/shift_history', methods=['GET'])
 def shift_history():
+    """
+    allows anybody to see all approved shifts
+    """
     hospital_id = request.args['hospital_id']
     cur_hospital = Hospital.query.get(hospital_id)
     shift_history_list = db.session.query(Shifts) \
@@ -375,9 +452,56 @@ def shift_history():
     return render_template('shift_history.html', hospital=cur_hospital, shifts=shift_history_list, logged_in=True)
 
 
+@app.route('/remove_shift', methods=['GET', 'POST'])
+@login_required
+def remove_shift():
+    """
+    allows admins to remove pending shifts
+    """
+    cur_hospital = Hospital.query.get(current_user.id)
+    if request.method == "POST":
+        cur_shift_id = request.form["id"]
+        shift_to_remove = Shifts.query.get(cur_shift_id)
+        shift_to_remove.status = "Removed"
+        db.session.commit()
+        return redirect(url_for('pending_shifts'))
+    shift_id = request.args.get('id')
+    cur_shift = Shifts.query.get(shift_id)
+    return render_template("remove_shift.html", shift=cur_shift, hospital=cur_hospital, logged_in=True)
+
+
+@app.route('/edit_shift', methods=['GET', 'POST'])
+@login_required
+def edit_shift():
+    """
+    allows admins to edit pending shifts
+    """
+    cur_hospital = Hospital.query.get(current_user.id)
+    if request.method == "POST":
+        shift_id = request.form["id"]
+        shift_to_update = Shifts.query.get(shift_id)
+        shift_to_update.area = request.form["area"]
+        shift_to_update.role = request.form["role"]
+        shift_to_update.date = datetime.strptime(request.form["date"], '%Y-%m-%d')
+        shift_to_update.start_time = request.form["start_time"]
+        shift_to_update.end_time = request.form["end_time"]
+        shift_to_update.comments = request.form["comments"]
+        shift_to_update.contact_name = request.form["contact_name"]
+        shift_to_update.contact_email = request.form["contact_email"]
+        db.session.commit()
+        return redirect(url_for('pending_shifts'))
+    shift_id = request.args.get('id')
+    shift_info = Shifts.query.get(shift_id)
+    print(shift_info.area)
+    return render_template("edit_shift.html", shift=shift_info, hospital=cur_hospital, logged_in=True)
+
+
 @app.route('/app_request_email', methods=['GET', 'POST'])
 @login_required
 def app_request_email():
+    """
+    triggers emails to be sent if request is approved
+    """
     shift_id = request.args['shift']
     shift = Shifts.query.get(shift_id)
     shift_email = shift.contact_email
@@ -430,6 +554,9 @@ def app_request_email():
 
 @app.route('/staff_request_email', methods=['GET', 'POST'])
 def staff_request_email():
+    """
+    triggers emails to be sent if request is made for a shift
+    """
     shift_id = request.args['shift']
     shift = Shifts.query.get(shift_id)
     shift_email = shift.contact_email

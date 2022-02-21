@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Shift{% endblock %}
+
+{% block content %}
+
+<body>
+
+<div class="edit-shift-form">
+    <h3>Edit Shift Info</h3>
+    <form class="edit-shift-form" action="{{ url_for('edit_shift') }}" method="POST">
+        <input hidden="hidden" name="id" value="{{ shift.shift_id }}">
+        <label>Area</label>
+        <input type="text" name="area" value="{{ shift.area }}">
+        <label for="role">Role</label>
+        <p id="current_role">(current role: {{ shift.role }})</p>
+        <select name="role" id="role">
+            <option value="{{ shift.role }}" selected hidden>Select an option</option>
+            <option value="RN">RN</option>
+            <option value="Medical Assistant">Medical Assistant</option>
+            <option value="Scrub Tech">Scrub Tech</option>
+            <option value="CRNA">CRNA</option>
+        </select>
+        <label for="date">Date</label>
+        <input type="date" name="date" value="{{ shift.date }}">
+        <label for="start_time">Start Time</label>
+        <input type="text" name="start_time" value="{{ shift.start_time }}">
+        <label for="end_time">End Time</label>
+        <input type="text" name="end_time" value="{{ shift.end_time }}">
+        <label for="comments">Shift Comments</label>
+        <input type="text" name="comments" value="{{ shift.comments }}">
+        <label for="contact_name">Contact Name</label>
+        <input type="text" name="contact_name" value="{{ shift.contact_name }}">
+        <label for="contact_email">Contact Email</label>
+        <input type="text" name="contact_email" value="{{ shift.contact_email }}">
+
+        <input type="submit" value="Edit Shift Info">
+    </form>
+</div>
+</body>
+
+{% endblock %}
