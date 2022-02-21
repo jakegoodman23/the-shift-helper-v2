@@ -202,11 +202,11 @@ def login():
         for hospital in hospitals:
             if check_password_hash(hospital.admin_password, password):
                 login_user(hospital)
-                return redirect(url_for('pending_shifts', hospital_id=session['hospital_id']))
+                return redirect(url_for('pending_shifts', hospital_id=current_user.id))
 
         for hospital in hospitals:
             if check_password_hash(hospital.staff_password, password):
-                return redirect(url_for('shifts', hospital_id=session['hospital_id']))
+                return redirect(url_for('shifts', hospital_id=current_user.id))
 
         flash("Login does not exist. Please try again or contact your site's administrator")
         return redirect(url_for('login'))

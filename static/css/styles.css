@@ -47,7 +47,6 @@ body {
 
 	font-family: "Open Sans", Arial, sans-serif;
 	padding-bottom: 15px;
-	color: #3579f6;
 }
 .box {
 	position: absolute;
@@ -165,9 +164,9 @@ input {
 	font-size: 20px;
 }
 
-.edit-shift-form [type=submit]:hover {
-  background-color: #45a049;
-}
+/*.edit-shift-form [type=submit]:hover {*/
+/*  background-color: #45a049;*/
+/*}*/
 
 .email-italic {
 	font-style: italic;
