@@ -35,7 +35,11 @@
                       <td><a href="mailto:{{ row.requested_by_email }}">{{ row.requested_by_name }}</a></td>
                       <td>{{ row.requestor_comments }}</td>
                       <td>{{ row.request_date }}</td>
-                      <td><a href="{{ url_for('approve_request', id=row.transaction_id) }}">Approve Request</a></td>
+                      <td><a href="{{ url_for('approve_request',id=row.transaction_id) }}">
+                          <button class="btn btn-lg">
+                              <i class="fa fa-check" style="color: green;"></i>
+                          </button>
+                      </a></td>
                   </tr>
               {% endfor %}
           </tbody>
