@@ -8,7 +8,7 @@ from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from wtforms import StringField, PasswordField, SubmitField, SelectField
-from wtforms.fields.html5 import DateField
+from wtforms.fields.html5 import DateField, EmailField
 from wtforms.validators import DataRequired, Email, Length
 from dotenv import load_dotenv
 from datetime import datetime, date
@@ -119,7 +119,7 @@ class SignupForm(FlaskForm):
     structure of the signup form of a FlaskForm object
     """
     admin_name = StringField(label='Name', validators=[DataRequired()])
-    admin_email = StringField(label='Email', validators=[DataRequired(), Email()])
+    admin_email = EmailField(label='Email', validators=[DataRequired(), Email()])
     hospital_name = StringField(label='Hospital Name', validators=[DataRequired()])
     admin_password = StringField(label='Admin Login', validators=[Length(min=4)])
     staff_password = StringField(label='Staff Login', validators=[Length(min=4)])
@@ -138,7 +138,7 @@ class ShiftForm(FlaskForm):
     start_time = StringField(label='Start Time (e.g. 8am)', validators=[DataRequired()])
     end_time = StringField(label='End Time (e.g. 5pm)', validators=[DataRequired()])
     contact_name = StringField(label="Contact's name", validators=[DataRequired()])
-    contact_email = StringField(label="Contact's email", validators=[DataRequired(), Email()])
+    contact_email = EmailField(label="Contact's email", validators=[DataRequired(), Email()])
     comments = StringField(label='Comments (competencies, random notes, etc.)')
     submit = SubmitField(label="Add Open Shift")
 
@@ -150,8 +150,8 @@ class RequestForm(FlaskForm):
     requestor_name = StringField(label="What's your name?", validators=[DataRequired()])
     label_for_email = Markup(
         "What's your email? <span class='email-italic'>(will be used to provide updates on shift)</span>")
-    requestor_email = StringField(label_for_email
-                                  , validators=[DataRequired(), Email()])
+    requestor_email = EmailField(label_for_email
+                                 , validators=[DataRequired(), Email()])
     requestor_phone_num = StringField(label="What's your phone number?")
     requestor_comments = StringField(label="Any comments you'd like to share?")
     submit = SubmitField(label="Request Open Shift")
