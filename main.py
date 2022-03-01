@@ -232,13 +232,18 @@ def signup():
             method='pbkdf2:sha256',
             salt_length=8
         )
-        if Hospital.query.filter_by(admin_password=hashed_admin_password).first():
-            # password already exists
-            flash('This admin password has already been taken. Please choose another one.')
+        hospitals = db.session.query(Hospital).all()
+        if signup_form.staff_password.data == signup_form.admin_password.data:
+            flash('Admin and Staff logins cannot match. Please choose separate logins.')
             return redirect(url_for('signup'))
-        elif Hospital.query.filter_by(staff_password=hashed_staff_password).first():
-            flash('This staff password has already been taken. Please choose another one.')
-            return redirect(url_for('signup'))
+        for hospital in hospitals:
+            if check_password_hash(hospital.admin_password, signup_form.admin_password.data):
+                flash('This admin password has already been taken. Please choose another one.')
+                return redirect(url_for('signup'))
+        for hospital in hospitals:
+            if check_password_hash(hospital.staff_password, signup_form.staff_password.data):
+                flash('This staff password has already been taken. Please choose another one.')
+                return redirect(url_for('signup'))
 
         cur_dt = datetime.now().strftime("%Y-%m-%d %H:%M")
         cur_dt = datetime.strptime(cur_dt, "%Y-%m-%d %H:%M")

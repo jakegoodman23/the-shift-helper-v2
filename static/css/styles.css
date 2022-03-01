@@ -182,3 +182,6 @@ input {
 	text-align: center;
 }
 
+.signup-error {
+	color: red;
+}
