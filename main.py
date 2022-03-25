@@ -546,7 +546,7 @@ def app_request_email():
                "please do continue to requesting more shifts. We need all the help we can get\n" \
                "From, Your trusty pals at Shift Helper"
 
-    #pass_emails.append(shift_email)
+    pass_emails.append(email_address)
     to_adds = ", ".join(pass_emails)
     with smtplib.SMTP("smtp.gmail.com", 587) as connection:
         connection.starttls()
