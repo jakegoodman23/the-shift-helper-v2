@@ -221,6 +221,7 @@ def signup():
     """
     signup_form = SignupForm()
     signup_form.validate_on_submit()
+    dup_ind = False
     if request.method == "POST":
         hashed_admin_password = generate_password_hash(
             signup_form.admin_password.data,
@@ -545,7 +546,7 @@ def app_request_email():
                "please do continue to requesting more shifts. We need all the help we can get\n" \
                "From, Your trusty pals at Shift Helper"
 
-    pass_emails.append(shift_email)
+    #pass_emails.append(shift_email)
     to_adds = ", ".join(pass_emails)
     with smtplib.SMTP("smtp.gmail.com", 587) as connection:
         connection.starttls()
