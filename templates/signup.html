@@ -16,10 +16,27 @@
 <div class="form-style">
   <div class="row">
     <div class="col-sm-12 col-md-8">
-      <h3>Sign up your hospital!</h3>
-      {{ wtf.quick_form(form) }}
+<h3>Sign up your hospital!</h3>
+<form action="{{ url_for('signup') }}" method="post" onsubmit="myButton.disabled = true; return true;">
+        {{ form.csrf_token() }}
+    <div class="form-group">
+      {{ wtf.form_field(form.admin_name, class='signup-form-control') }}
+    </div>
+    <div class="form-group">
+      {{ wtf.form_field(form.admin_email, type='email', class='signup-form-control') }}
+    </div>
+    <div class="form-group">
+      {{ wtf.form_field(form.hospital_name, class='signup-form-control') }}
+    </div>
+    <div class="form-group">
+      {{ wtf.form_field(form.admin_password, class='signup-form-control') }}
+    </div>
+    <div class="form-group">
+      {{ wtf.form_field(form.staff_password, class='signup-form-control') }}
+    </div>
+<button type="submit" name="myButton" class="btn btn-block btn-large">Sign up</button>
+</form>
     </div>
   </div>
 </div>
-
 {% endblock %}

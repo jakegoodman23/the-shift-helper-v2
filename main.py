@@ -180,7 +180,6 @@ def about():
     """
     take user to the about page
     """
-
     if current_user.is_authenticated:
         cur_hospital = Hospital.query.get(current_user.id)
         return render_template('about.html', hospital=cur_hospital, logged_in=True)
@@ -221,7 +220,6 @@ def signup():
     """
     signup_form = SignupForm()
     signup_form.validate_on_submit()
-    dup_ind = False
     if request.method == "POST":
         hashed_admin_password = generate_password_hash(
             signup_form.admin_password.data,
@@ -277,6 +275,24 @@ def signup_success():
     """
     hospital_id = request.args['hospital_id']
     hospital = Hospital.query.get(hospital_id)
+
+    contents = f"Thank you so much for signing up for Shift Helper! Below you will find your registration info so " \
+               f"you're able to retrieve as needed.\n" \
+               f"Hospital Name: {hospital.hospital_name}\n" \
+               f"Admin Name: {hospital.admin_name}\n" \
+               f"Admin Email: {hospital.admin_email}\n" \
+               f"Admin Login: {session['admin_password']}\n" \
+               f"Staff Login: {session['staff_password']}\n\n" \
+               "From,\nYour trusty pals at Shift Helper"
+
+    with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+        connection.starttls()
+        connection.login(email_address, email_password)
+        connection.sendmail(
+            from_addr=email_address,
+            to_addrs=hospital.admin_email,
+            msg=f"Subject: Shift Helper Signup Info!\n\n{contents}"
+        )
     return render_template('signup_success.html', hospital=hospital, logged_in=True)
 
 
@@ -500,7 +516,6 @@ def edit_shift():
         return redirect(url_for('pending_shifts'))
     shift_id = request.args.get('id')
     shift_info = Shifts.query.get(shift_id)
-    print(shift_info.area)
     return render_template("edit_shift.html", shift=shift_info, hospital=cur_hospital, logged_in=True)
 
 
