@@ -277,7 +277,7 @@ def signup_success():
     hospital = Hospital.query.get(hospital_id)
 
     contents = f"Thank you so much for signing up for Shift Helper! Below you will find your registration info so " \
-               f"you're able to retrieve as needed.\n" \
+               f"you're able to retrieve as needed.\n\n" \
                f"Hospital Name: {hospital.hospital_name}\n" \
                f"Admin Name: {hospital.admin_name}\n" \
                f"Admin Email: {hospital.admin_email}\n" \
