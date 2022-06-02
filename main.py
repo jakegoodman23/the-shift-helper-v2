@@ -25,7 +25,6 @@ email_password = os.environ.get("EMAIL_PASSWORD")
 app = Flask(__name__)
 debug = False
 DEV = False
-
 if DEV:
     os.chdir(dirname)
     debug = True
