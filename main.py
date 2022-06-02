@@ -285,7 +285,7 @@ def signup_success():
                f"Staff Login: {session['staff_password']}\n\n" \
                "From,\nYour trusty pals at Shift Helper"
 
-    with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+    with smtplib.SMTP("smtp.office365.com", 587) as connection:
         connection.starttls()
         connection.login(email_address, email_password)
         connection.sendmail(
@@ -540,7 +540,7 @@ def app_request_email():
                f"Please reach out to {shift_name} ({shift_email}) with any questions you might have.\n" \
                "From,\nYour trusty pals at Shift Helper"
 
-    with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+    with smtplib.SMTP("smtp.office365.com", 587) as connection:
         connection.starttls()
         connection.login(email_address, email_password)
         connection.sendmail(
@@ -563,7 +563,7 @@ def app_request_email():
 
     pass_emails.append(email_address)
     to_adds = ", ".join(pass_emails)
-    with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+    with smtplib.SMTP("smtp.office365.com", 587) as connection:
         connection.starttls()
         connection.login(email_address, email_password)
         connection.sendmail(
@@ -594,7 +594,7 @@ def staff_request_email():
                "Please navigate to the app to review the request.\n\n" \
                "From,\nYour trusty pals at Shift Helper"
 
-    with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+    with smtplib.SMTP("smtp.office365.com", 587) as connection:
         connection.starttls()
         connection.login(email_address, email_password)
         connection.sendmail(
